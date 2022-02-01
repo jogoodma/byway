@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+  buyer-server:
+    build:
+      context: ./server
+    ports:
+      - "127.0.0.1::3000"
+    volumes:
+      - buyer-vol:/var/pico-image
+    networks:
+      - buyer
+  seller-server:
+    build:
+      context: ./server
+    ports:
+      - "127.0.0.1::3000"
+    volumes:
+      - seller-vol:/var/pico-image
+    networks:
+      - seller
+
+networks:
+  buyer:
+  seller:
+
+volumes:
+  buyer-vol: {}
+  seller-vol: {}
+
