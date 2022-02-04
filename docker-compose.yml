@@ -5,15 +5,22 @@ services:
       context: ./server
     ports:
       - "127.0.0.1::3000"
+    environment:
+      - NODE_ENV=production
+    init: true
     volumes:
       - buyer-vol:/var/pico-image
+      - ./server/rulesets:/usr/src/app/rulesets
     networks:
       - buyer
   seller-server:
     build:
       context: ./server
+    init: true
     ports:
       - "127.0.0.1::3000"
+    environment:
+      - NODE_ENV=production
     volumes:
       - seller-vol:/var/pico-image
     networks:

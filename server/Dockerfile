@@ -23,20 +23,33 @@
 # running at the same time.
 #
 
-FROM node:lts-alpine
+# Dockerfile modified to follow https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md
+
+# Pin LTS Alpine image to a specific digest.
+FROM node:lts-alpine@sha256:2f50f4a428f8b5280817c9d4d896dbee03f072e93f4e0c70b90cc84bd1fcfe0d
 
 # Create app directory
 WORKDIR /usr/src/app
 
-# Create mount point for image
-VOLUME ["/var/pico-image"]
 ENV PICO_ENGINE_HOME=/var/pico-image
+
+# Global install in a non-root location.
+ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
+ENV PATH=$PATH:/home/node/.npm-global/bin
+
+# Create mount point for image and set permissions.
+RUN mkdir /var/pico-image && chown -R node:node /var/pico-image
+VOLUME ["/var/pico-image"]
 
 # install the production pico-engine 
 RUN npm install -g pico-engine
 
 # run it on port 3000 (default)
 EXPOSE 3000
+
+# Run pico engine as the node user.
+USER node
+
 CMD ["pico-engine"]
 
 # This might be useful for creating a docker image of the dev env (includes parser, etc.)
