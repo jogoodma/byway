@@ -2,7 +2,7 @@ ruleset byway.agent.buyer {
   meta {
     name "Buyer Agent"
     description "Buyer agent pico."
-    use module byway.validation.email alias email
+    use module byway.validation.email alias email_validator
     shares items, name, email
   }
   global {
@@ -31,13 +31,16 @@ ruleset byway.agent.buyer {
   rule set_email {
     select when buyer_agent set_email
     pre {
-      email_addr = event:attrs{"email"}.klog("Email attribute:")
+      email = event:attrs{"email"}.klog("Email attribute:")
     }
-    if (email.isValid(email_addr)) {
+    if (email_validator:isValid(email)) then
       send_directive("store_email", {"email":email})
-    }
     fired {
       ent:email := email
+    }
+    else {
+      error error email + " is invalid."
+
     }
   }
 
