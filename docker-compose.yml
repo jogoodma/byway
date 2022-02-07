@@ -8,7 +8,7 @@ services:
     ports:
       - "127.0.0.1::443"
     volumes:
-      - ./server/Caddyfile:/etc/caddy/Caddyfile
+      - ./proxy/Caddyfile:/etc/caddy/Caddyfile
       - caddy_buyer_data:/data
       - caddy_buyer_config:/config
     networks:

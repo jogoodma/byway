@@ -4,7 +4,7 @@ The Byway is an alternate path for buyers and sellers to reach each other indepe
 
 ## Dependencies
 
-* Node v14+
+* Node v16+
 * Docker / Docker Compose
 
 ## Getting started
@@ -27,8 +27,9 @@ docker-compose up -d
 │       ├── config
 │       ├── tsconfig
 │       └── ui              - UI components
+├── proxy                   - Proxy server that sits on top of the server and client.
 └── server
-    └── krl                 - Pico engine rulesets
+    └── rulesets            - Pico engine rulesets
 ```
 
 ## References
