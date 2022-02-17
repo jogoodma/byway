@@ -6,7 +6,7 @@ services:
     depends_on:
       - buyer-server
     ports:
-      - "127.0.0.1::443"
+      - "127.0.0.1::80"
     volumes:
       - ./proxy/Caddyfile:/etc/caddy/Caddyfile
       - caddy_buyer_data:/data

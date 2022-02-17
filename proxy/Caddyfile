@@ -2,7 +2,7 @@
 # Use localhost for dev, change to a proper domain for production.
 # When a domain is associated Caddy will automatically setup SSL certs, otherwise it will use
 # a self signed cert.
-localhost
+http://localhost:80
 
 # Proxy Sky events and queries to the Pico engine server.
 reverse_proxy /sky/* buyer-server:3000

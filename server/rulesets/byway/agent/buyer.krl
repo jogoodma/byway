@@ -3,53 +3,39 @@ ruleset byway.agent.buyer {
     name "Buyer Agent"
     description "Buyer agent pico."
     use module byway.validation.email alias email_validator
-    shares items, name, email
+    shares items, user
   }
   global {
     items = function() {
-      ent:items.defaultsTo({}).values()
+      ent:items.defaultsTo({})
     }
-    name = function() { 
-      ent:name
-    }
-    email = function() {
-      ent:email
+    user = function() {
+      ent:user
     }
   }
 
-  rule set_name {
-    select when buyer_agent set_name
+  rule update_user_name {
+    select when user update
     pre {
       name = event:attrs{"name"}.klog("Name attribute:")
     }
-    send_directive("store_name", {"name":name})
     fired {
-      ent:name := name
+      ent:user{"name"} := name
     }
   }
 
-  rule set_email {
-    select when buyer_agent set_email
+  rule update_user_email {
+    select when user update
     pre {
       email = event:attrs{"email"}.klog("Email attribute:")
     }
     if (email_validator:isValid(email)) then
-      send_directive("store_email", {"email":email})
+        send_directive("user_updated", {"email":email})
     fired {
-      ent:email := email
+      ent:user{"email"} := email
     }
     else {
       error error email + " is invalid."
-
     }
   }
-
-/*
-  rule addItem {
-    select when item add
-    pre {
-
-    } 
-  }
-  */
 }
