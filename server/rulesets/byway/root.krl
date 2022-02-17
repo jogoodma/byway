@@ -7,6 +7,12 @@ ruleset byway.root {
     shares agents, buyerAgents, sellerAgents, agentExists
   }
   global {
+
+    buyer_files = [
+      "file:///usr/src/app/rulesets/byway/validation/email.krl",
+      "file:///usr/src/app/rulesets/byway/agent/buyer.krl",
+    ]
+
     /**
      * Return a list of agents by type.
      *
@@ -82,6 +88,7 @@ ruleset byway.root {
         setting(name, email, type, password)
     if email_validator:isValid(email) then noop()
     fired {
+      log debug "Raising new child request when creating a new agent."
       raise wrangler event "new_child_request"
           attributes {
               "name": name,
@@ -90,5 +97,31 @@ ruleset byway.root {
               "password": password
           }
     }
+  }
+
+  /**
+   * Install agent rulesets in children.
+  */
+  rule installAgentRulesets {
+    select when wrangler new_child_created
+      foreach buyer_files setting(file)
+        pre {
+          eci = event:attrs{"eci"}
+          name = event:attrs{"name"}.klog("In ruleset")
+        }
+        event:sent({
+          "eci": eci,
+          "eid": "install-ruleset",
+          "domain": "wrangler",
+          "type": "install_ruleset_request",
+          "attrs": {
+            "url": file
+          }
+        })
+        fired {
+            log debug "Name = " + name
+            raise byway event "child_has_rulesets"
+              attributes event:attrs.put({"byway": name}) on final
+        }
   }
 }

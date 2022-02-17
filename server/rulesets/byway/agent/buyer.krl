@@ -12,6 +12,22 @@ ruleset byway.agent.buyer {
     user = function() {
       ent:user
     }
+    // TODO Tighten down permissions after debugging.
+    eventPolicy = {
+      "allow": [ { "domain": "*", "name": "*" }, ],
+      "deny": []
+    }
+    queryPolicy = {
+      "allow": [ { "rid": meta:rid, "name": "*" } ],
+      "deny": []
+    }
+  }
+
+  rule init {
+    select when wrangler ruleset_installed where event:attr("rids") >< meta:rid
+      every {
+        wrangler:createChannel(["byway","buyer","agent"], eventPolicy, queryPolicy)
+      }
   }
 
   rule update_user_name {
