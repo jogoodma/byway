@@ -67,6 +67,7 @@ ruleset byway.root {
      if agentExists(name, email, type) then
         send_directive("duplicate agent", {"name": name, "email": email})
      fired {
+        log info "Agent already exists, ignoring"
         last
      }
   }
@@ -106,19 +107,24 @@ ruleset byway.root {
     select when wrangler new_child_created
       foreach buyer_files setting(file)
         pre {
-          eci = event:attrs{"eci"}
-          name = event:attrs{"name"}.klog("In ruleset")
+          eci = event:attrs{"eci"}.klog("eci in installAgentRulesets")
+          name = event:attrs{"name"}.klog("Name in installAgentRulesets")
         }
-        event:sent({
+        event:send({
           "eci": eci,
           "eid": "install-ruleset",
           "domain": "wrangler",
           "type": "install_ruleset_request",
           "attrs": {
-            "url": file
+            "url": file,
+            "name": event:attrs{"name"},
+            "email": event:attrs{"email"},
+            "type": event:attrs{"type"},
+            "password": event:attrs{"password"}
           }
         })
         fired {
+            log debug event:attrs
             log debug "Name = " + name
             raise byway event "child_has_rulesets"
               attributes event:attrs.put({"byway": name}) on final
