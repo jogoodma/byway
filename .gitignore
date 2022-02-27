@@ -108,3 +108,4 @@ dist
 
 # asdf local setting
 .tool-versions
+backups/*
