@@ -3,7 +3,7 @@ ruleset byway.user.manager {
     name "UserManager"
     description "Create and delete users."
     use module io.picolabs.wrangler alias wrangler
-    shares users
+    shares userChannels
   }
   global {
     /**
@@ -12,20 +12,44 @@ ruleset byway.user.manager {
      *  value - public ECI for validation.
      * @returns {map} - A user entity map.
     */
-    users = function() {
-      ent:users.defaultsTo({})
+    userChannels = function() {
+      ent:userChannels.defaultsTo([])
     }
   }
 
-  rule create_new_user {
+  rule createNewUser {
     select when user new
     // Create a new user here.
     noop()
   }
 
+  rule addUserEci {
+    select when user add_eci
+        name re#(.+)#
+        eci re#(.+)#
+        setting(name, eci)
+    pre {
+      existingChannels = userChannels()
+    }
+    fired {
+      ent:userChannels := existingChannels.append({"name": name, "eci": eci})
+    }
+  }
+  
+  rule clearUserChannels {
+    select when user_channels clear
+    fired {
+      ent:userChannels := []
+    }
+  }
+
   rule delete_user {
     select when user delete
+      name re#(.+)#
+      setting(name)
     // Delete user
-    noop()
+    fired {
+      ent:userChannels := userChannels().filter(function(user) { user{"name"} != name})
+    }
   }
 }

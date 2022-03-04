@@ -9,7 +9,9 @@ ruleset byway.user.entity {
   }
   global {
     getUser = function() {
-      ent:user.defaultsTo({})
+      user = ent:user.defaultsTo({})
+      // Hide password from API
+      user.delete("password")
     }
   }
 
@@ -44,7 +46,7 @@ ruleset byway.user.entity {
     }
   }
 
-  rule update_name {
+  rule updateName {
     select when user update
         firstName re#(.+)#
         surname re#(.+)#
@@ -55,7 +57,7 @@ ruleset byway.user.entity {
     }
   }
 
-  rule update_email {
+  rule updateEmail {
     select when user update
         email re#(.+)#
         setting(email)
@@ -65,7 +67,7 @@ ruleset byway.user.entity {
     }
   }
 
-  rule update_password {
+  rule updatePassword {
     select when user update
         password re#(.+)#
         setting(password)
@@ -74,7 +76,7 @@ ruleset byway.user.entity {
     }
   }
 
-  rule delete_user {
+  rule deleteUser {
     select when user delete
     // Delete user
     noop()

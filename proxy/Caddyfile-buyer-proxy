@@ -4,9 +4,4 @@
 # a self signed cert.
 http://localhost:80
 
-# Proxy Sky events and queries to the Pico engine server.
-reverse_proxy /sky/* buyer-server:3000
-reverse_proxy /c/* buyer-server:3000
-
-# Pass all other requests to the Remix App
-reverse_proxy buyer-client:3000
+reverse_proxy buyer-server:3000

@@ -10,6 +10,8 @@ RUN npm install
 
 COPY . .
 
+RUN chown -R node:node /usr/src/app
+
 # run it on port 3000 (default)
 EXPOSE 3000
 
