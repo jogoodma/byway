@@ -30,6 +30,7 @@ async function fetchUser(eci:string): Promise<User> {
 }
 
 export let loader: LoaderFunction = async () => {
+  // TODO This ECI is hard coded!!!
   const userChannels = await fetchUserChannels('cl05vgib800hd07qh5hgm0xse')
   const userResponses = await Promise.allSettled(
     userChannels?.map(async (channel) => await fetchUser(channel.eci))
@@ -37,7 +38,6 @@ export let loader: LoaderFunction = async () => {
   const users = (userResponses.filter(
     (res) => res.status === "fulfilled"
   ) as PromiseFulfilledResult<User>[] | undefined)?.map(u => u.value)
-  console.log(users)
   return users
 }
 
