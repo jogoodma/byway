@@ -4,7 +4,7 @@ import {
   Meta,
   Outlet,
   Scripts,
-  ScrollRestoration
+  ScrollRestoration,
 } from "remix";
 import type { MetaFunction } from "remix";
 
@@ -22,13 +22,9 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <header>
-
-        </header>
+        <header></header>
         <Outlet />
-        <footer>
-
-        </footer>
+        <footer></footer>
         <ScrollRestoration />
         <Scripts />
         {process.env.NODE_ENV === "development" && <LiveReload />}
