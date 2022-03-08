@@ -22,9 +22,9 @@ export interface Directives {
         [key: string]: string | number;
         privateUserEci: string;
       };
-      meta: { };
+      meta: {};
     }
-  ]
+  ];
 }
 
 /**
@@ -33,7 +33,9 @@ export interface Directives {
  * @param eci - The ECI of the user manager.
  * @return {Promise<UserChannel[]>} - A promise that resolves an array of user channel ECIs
  */
-export const fetchUserChannels = async (eci: string): Promise<UserChannel[]> => {
+export const fetchUserChannels = async (
+  eci: string
+): Promise<UserChannel[]> => {
   const resp = await fetch(
     `http://buyer-server:3000/c/${eci}/query/byway.user.manager/userChannels`,
     { method: "POST" }
@@ -42,7 +44,7 @@ export const fetchUserChannels = async (eci: string): Promise<UserChannel[]> => 
     return resp.json();
   }
   throw Error("Error fetching user channels.");
-}
+};
 
 /**
  * Fetches the basic user data from the public ECI.
@@ -60,22 +62,25 @@ export const fetchUser = async (eci: string): Promise<User> => {
     return resp.json();
   }
   throw Error("Error fetching user.");
-}
+};
 
-export const authenticateUser = async (eci: string, password:string): Promise<Directives> => {
+export const authenticateUser = async (
+  eci: string,
+  password: string
+): Promise<Directives> => {
   const resp = await fetch(
     `http://buyer-server:3000/c/${eci}/event-wait/user/authenticate`,
     {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Accept": "application/json"
+        Accept: "application/json",
       },
-      body: JSON.stringify({"password": password}),
+      body: JSON.stringify({ password: password }),
     }
   );
   if (resp.ok) {
     return resp.json();
   }
   throw Error("Error authenticating user.");
-}
+};

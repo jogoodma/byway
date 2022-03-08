@@ -1,6 +1,10 @@
 import { useLoaderData, redirect } from "remix";
 import type { ActionFunction, LoaderFunction, LinksFunction } from "remix";
-import { authenticateUser, fetchUserChannels, fetchUser } from "~/pico/users.server";
+import {
+  authenticateUser,
+  fetchUserChannels,
+  fetchUser,
+} from "~/pico/users.server";
 import type { User } from "~/pico/users.server";
 import { picoEngine } from "~/cookies";
 
@@ -11,9 +15,9 @@ import NewUser from "~/components/NewUser";
 
 export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: styles }];
-}
+};
 
-export const action: ActionFunction = async ({request}) => {
+export const action: ActionFunction = async ({ request }) => {
   const cookieHeader = request.headers.get("Cookie");
   const cookie = (await picoEngine.parse(cookieHeader)) ?? {};
   const formData = await request.formData();
@@ -22,15 +26,16 @@ export const action: ActionFunction = async ({request}) => {
   const password = formData.get("password") as string;
 
   const result = await authenticateUser(eci, password);
-  cookie.privateUserEci = result.directives.find(d => d.name === 'authenticated')?.options?.privateUserEci
+  cookie.privateUserEci = result.directives.find(
+    (d) => d.name === "authenticated"
+  )?.options?.privateUserEci;
 
   return redirect("/", {
     headers: {
       "Set-Cookie": await picoEngine.serialize(cookie),
-    }
+    },
   });
-}
-
+};
 
 export let loader: LoaderFunction = async () => {
   // TODO This ECI is hard coded!!!
