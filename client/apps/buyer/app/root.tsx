@@ -6,10 +6,17 @@ import {
   Scripts,
   ScrollRestoration,
 } from "remix";
-import type { MetaFunction } from "remix";
+import { Container } from "@mantine/core";
+import type { MetaFunction, LinksFunction } from "remix";
+import styles from "~/styles/global.css";
+import Header from "~/components/Header";
 
 export const meta: MetaFunction = () => {
   return { title: "Byway" };
+};
+
+export const links: LinksFunction = () => {
+  return [{ rel: "stylesheet", href: styles }];
 };
 
 export default function App() {
@@ -19,10 +26,20 @@ export default function App() {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="true"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"
+          rel="stylesheet"
+        />
         <Links />
       </head>
       <body>
-        <header></header>
+        <Header />
         <Outlet />
         <footer></footer>
         <ScrollRestoration />

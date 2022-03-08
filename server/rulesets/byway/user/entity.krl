@@ -11,7 +11,7 @@ ruleset byway.user.entity {
     getUser = function() {
       user = ent:user.defaultsTo({})
       // Hide password from API
-      user.delete("password")
+      user.delete("password").put("publicEci", meta:eci)
     }
   }
 
@@ -29,16 +29,18 @@ ruleset byway.user.entity {
         firstName re#(.+)#
         surname re#(.+)#
         email re#(.+)#
+        username re#(.+)#
         password re#(.+)#
-        setting(firstName, surname, email, password)
+        setting(firstName, surname, email, username, password)
     pre {
-      userDoesNotExist = ent:user{"email"}.isnull()
+      userDoesNotExist = ent:user{"username"}.isnull()
     }
     if email_validator:isValid(email) && userDoesNotExist then noop()
     fired {
       ent:user{"firstName"} := firstName
       ent:user{"surname"} := surname
       ent:user{"email"} := email
+      ent:user{"username"} := username
       ent:user{"password"} := password
     }
     else {
@@ -67,12 +69,26 @@ ruleset byway.user.entity {
     }
   }
 
+  rule updateUsername {
+    select when user update
+        username re#(.+)#
+        setting(username)
+    fired {
+      ent:user{"username"} := username
+    }
+  }
+
   rule updatePassword {
     select when user update
-        password re#(.+)#
-        setting(password)
+        oldPassword re#(.+)#
+        newPassword re#(.+)#
+        setting(oldPassword, newPassword)
+    if (oldPassword == ent:user{"password"}) then noop() 
     fired {
-      ent:user{"password"} := password
+      ent:user{"password"} := newPassword
+    }
+    else {
+      log error "Invalid password supplied."
     }
   }
 
@@ -80,5 +96,23 @@ ruleset byway.user.entity {
     select when user delete
     // Delete user
     noop()
+  }
+
+  rule authenticateUser {
+    select when user authenticate
+        password re#(.+)#
+        setting(password)
+    pre {
+      privateEci = wrangler:channels(["byway","entity","user","validated"]).head(){"id"}
+    }
+    if (privateEci && password == ent:user{"password"}) then every {
+      send_directive("authenticated", {"privateUserEci": privateEci})
+    }
+    fired {
+      log debug "Password = " + password
+    }
+    else {
+      log debug "Password = " + password
+    }
   }
 }

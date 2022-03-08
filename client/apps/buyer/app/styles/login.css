@@ -1,0 +1,21 @@
+
+main {
+  display: flex;
+  justify-content: center;
+}
+
+.login-container {
+  min-width: 80vw;
+  min-height: 30vh;
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  margin-top: 5rem;
+}
+
+h1 {
+  color: dimgray;
+}
+.user-grid {
+  margin-top: 1rem;
+}
