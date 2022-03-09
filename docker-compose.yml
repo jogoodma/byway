@@ -37,6 +37,9 @@ services:
     volumes:
       # REMOVE IN PROD
       - ./client/apps/buyer/app:/usr/src/app/app
+    # REMOVE IN PROD
+    ports:
+      - "127.0.0.1:8002:8002"
     networks:
       - buyer
   buyer-server:

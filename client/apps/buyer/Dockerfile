@@ -13,7 +13,7 @@ COPY . .
 RUN chown -R node:node /usr/src/app
 
 # run it on port 3000 (default)
-EXPOSE 3000
+EXPOSE 3000 8002
 
 # Run as the node user.
 USER node

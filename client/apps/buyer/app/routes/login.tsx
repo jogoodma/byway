@@ -24,17 +24,21 @@ export const action: ActionFunction = async ({ request }) => {
 
   const eci = formData.get("publicEci") as string;
   const password = formData.get("password") as string;
+  //const passwordHash = await bcrypt.hash(password, 10)
 
   const result = await authenticateUser(eci, password);
   cookie.privateUserEci = result.directives.find(
     (d) => d.name === "authenticated"
   )?.options?.privateUserEci;
 
-  return redirect("/", {
-    headers: {
-      "Set-Cookie": await picoEngine.serialize(cookie),
-    },
-  });
+  if (cookie.privateUserEci) {
+    return redirect("/", {
+      headers: {
+        "Set-Cookie": await picoEngine.serialize(cookie),
+      },
+    });
+  }
+  return null;
 };
 
 export let loader: LoaderFunction = async () => {
@@ -50,7 +54,7 @@ export let loader: LoaderFunction = async () => {
   )?.map((u) => u.value);
 };
 
-export default function Login() {
+const Login = () => {
   const users: User[] = useLoaderData();
   return (
     <main>
@@ -70,4 +74,5 @@ export default function Login() {
       </div>
     </main>
   );
-}
+};
+export default Login;
