@@ -5,23 +5,39 @@ ruleset byway.user.entity {
     description "Defines basic user attributes."
     use module io.picolabs.wrangler alias wrangler
     use module byway.validation.email alias email_validator
-    shares getUser
+    use module io.picolabs.subscription alias subscription
+
+    shares getUser, getItems, isAuthenticated
   }
   global {
     getUser = function() {
       user = ent:user.defaultsTo({})
       // Hide password from API
-      user.delete("password").put("publicEci", meta:eci)
+      user.delete("password_hash").put("publicEci", meta:eci)
+    }
+    isAuthenticated = function() {
+      // Add remote call to remix API validation.
+      privateEci = wrangler:channels(["byway","entity","user","validated"]).head(){"id"}
+      return privateEci
+    }
+    getItems = function() {
+      agentSubs = subscription:established("Tx_role","agent")
+      itemResult = agentSubs.map(function(agentChannel) {
+        queryResult = wrangler:picoQuery(agentChannel{"Tx"}, "byway.agent.entity", "items")
+        return queryResult
+      })
+      return itemResult
     }
   }
 
   /**
    *  Initializes the user entity pico.
    *  
+   * @param {string} userId
    * @param {string} firstName
    * @param {string} surname
    * @param {string} email
-   * @param {string} password
+   * @param {string} passwordHash
    * @returns void
   */
   rule init {
@@ -30,18 +46,19 @@ ruleset byway.user.entity {
         surname re#(.+)#
         email re#(.+)#
         username re#(.+)#
-        password re#(.+)#
-        setting(firstName, surname, email, username, password)
+        passwordHash re#(.+)#
+        setting(firstName, surname, email, username, passwordHash)
     pre {
       userDoesNotExist = ent:user{"username"}.isnull()
     }
     if email_validator:isValid(email) && userDoesNotExist then noop()
     fired {
+      ent:user{"userId"} := random:uuid()
       ent:user{"firstName"} := firstName
       ent:user{"surname"} := surname
       ent:user{"email"} := email
       ent:user{"username"} := username
-      ent:user{"password"} := password
+      ent:user{"passwordHash"} := passwordHash
     }
     else {
       log error "User is already initialized."
@@ -78,14 +95,14 @@ ruleset byway.user.entity {
     }
   }
 
-  rule updatePassword {
+  rule updatePasswordHash {
     select when user update
-        oldPassword re#(.+)#
-        newPassword re#(.+)#
-        setting(oldPassword, newPassword)
-    if (oldPassword == ent:user{"password"}) then noop() 
+        oldPasswordHash re#(.+)#
+        newPasswordHash re#(.+)#
+        setting(oldPasswordHash, newPasswordHash)
+    if (oldPasswordHash == ent:user{"passwordHash"}) then noop() 
     fired {
-      ent:user{"password"} := newPassword
+      ent:user{"passwordHash"} := newPassword
     }
     else {
       log error "Invalid password supplied."

@@ -16,7 +16,12 @@ export const meta: MetaFunction = () => {
 };
 
 export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: styles }];
+  return [
+    { rel: "stylesheet", href: styles },
+    { rel: "preconnect", href: "https://fonts.googleapis.com" },
+    { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "true" },
+    { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" }
+  ];
 };
 
 export default function App() {
@@ -26,16 +31,6 @@ export default function App() {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="true"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"
-          rel="stylesheet"
-        />
         <Links />
       </head>
       <body>

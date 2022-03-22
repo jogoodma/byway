@@ -1,12 +1,5 @@
 import React from "react";
-
-export interface TitleProps {
-  children?: React.ReactNode;
-}
-
-const Title: React.FC<TitleProps> = (props) => {
-  return <div className="title">{props.children}</div>;
-};
+import { Link } from "@remix-run/react";
 
 export interface HeaderProps {
   children?: React.ReactNode;
@@ -15,7 +8,19 @@ export interface HeaderProps {
 const Header: React.FC<HeaderProps> = () => {
   return (
     <header>
-      <Title>Byway</Title>
+      <h1 className="title">Byway</h1>
+      <div className="sub-header">
+        <div>
+          <nav>
+            <ol>
+              <li><Link to="/">Home</Link></li>
+              <li><Link to="/stores">Stores</Link></li>
+              <li><Link to="/marketplace">Marketplace</Link></li>
+            </ol>
+          </nav>
+        </div>
+        <div className="user-status">User</div>
+      </div>
     </header>
   );
 };
