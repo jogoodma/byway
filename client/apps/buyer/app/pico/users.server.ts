@@ -85,7 +85,7 @@ export const authenticateUser = async (
   throw Error("Error authenticating user.");
 };
 
-export const getItems = async ( eci: string) => {
+export const getItems = async (eci: string) => {
   const resp = await fetch(
     `http://buyer-server:3000/c/${eci}/query/byway.user.entity/getItems`,
     { method: "POST" }

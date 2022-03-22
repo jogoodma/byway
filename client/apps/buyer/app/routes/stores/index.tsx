@@ -1,10 +1,8 @@
 import { useLoaderData, redirect } from "remix";
 import type { ActionFunction, LoaderFunction, LinksFunction } from "remix";
-import {
-  getItems
-} from "~/pico/users.server";
+import { getItems } from "~/pico/users.server";
 
-import {Button, Center, Container, Divider, Grid, Table} from "@mantine/core";
+import { Button, Center, Container, Divider, Grid, Table } from "@mantine/core";
 
 /*export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: styles }];
@@ -24,30 +22,29 @@ const Login = () => {
       <div className="container">
         <h1>Store Items</h1>
         <Divider />
-        {items.map(store => {
+        {items.map((store) => {
           const rows = store.items.map((item) => (
             <tr key={item.name}>
               <td>{item.name}</td>
               <td>{item.description}</td>
               <td>{item.price}</td>
             </tr>
-            )
-          )
+          ));
           return (
             <>
               <h2>{store.agentName}</h2>
               <Table striped highlightOnHover>
                 <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Description</th>
-                  <th>Price</th>
-                </tr>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                  </tr>
                 </thead>
                 <tbody>{rows}</tbody>
               </Table>
             </>
-          )
+          );
         })}
       </div>
     </main>

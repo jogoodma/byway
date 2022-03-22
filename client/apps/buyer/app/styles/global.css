@@ -20,12 +20,13 @@ body {
 }
 
 header {
-  background: linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) );
+  background: linear-gradient( rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7) );
   border-bottom: white thin solid;
   min-height: 6rem;
   display: flex;
   flex-flow: column nowrap;
   padding: 2rem 1rem 0 1rem;
+  box-shadow: var(--shadow-4);
 }
 
 .sub-header {
@@ -65,6 +66,9 @@ header {
 
 }
 
+main h1, main h2, main h3 {
+  color: var(--gray-6);
+}
 
 .container {
   min-width: 80vw;
@@ -74,3 +78,4 @@ header {
   padding: 2rem;
   margin-top: 5rem;
 }
+
