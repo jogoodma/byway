@@ -15,13 +15,53 @@ ruleset byway.user.manager {
     userChannels = function() {
       ent:userChannels.defaultsTo([])
     }
+    userEntityRulesets = [
+      "../validation/email",
+      "entity",
+    ]
   }
 
   rule createNewUser {
     select when user new
-    // Create a new user here.
-    noop()
+      firstName re#(.+)#
+      surname re#(.+)#
+      username re#(.+)#
+      email re#(.+)#
+      passwordHash re#(.+)#
+      setting(firstName, surname, username, email, passwordHash)
+      // TODO - Block duplicate user creation.
+    fired {
+      raise wrangler event "new_child_request" attributes {
+        "userid": random:uuid(),
+        "name": email,
+        "firstName": firstName,
+        "surname": surname,
+        "username": username,
+        "email": email,
+        "passwordHash": passwordHash,
+      }
+    }
   }
+
+  rule installUserRulesets {
+    select when wrangler new_child_created
+    foreach userEntityRulesets setting(rid)
+      pre {
+        userEci = event:attrs{"eci"}
+      }
+      event:send({
+        "eci": userEci,
+        "eid": "install-ruleset",
+        "domain": "wrangler",
+        "type":"install_ruleset_request",
+        "attrs": {
+          "absoluteURL": meta:rulesetURI,
+          "rid": rid,
+          "config": {}
+        },
+      })
+  }
+
 
   rule addUserEci {
     select when user add_eci

@@ -41,7 +41,7 @@ ruleset byway.user.entity {
    * @returns void
   */
   rule init {
-    select when user new
+    select when wrangler ruleset_installed
         firstName re#(.+)#
         surname re#(.+)#
         email re#(.+)#
@@ -102,7 +102,7 @@ ruleset byway.user.entity {
         setting(oldPasswordHash, newPasswordHash)
     if (oldPasswordHash == ent:user{"passwordHash"}) then noop() 
     fired {
-      ent:user{"passwordHash"} := newPassword
+      ent:user{"passwordHash"} := newPasswordHash
     }
     else {
       log error "Invalid password supplied."
