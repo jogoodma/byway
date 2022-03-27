@@ -1,25 +1,24 @@
-
 ruleset byway.user.entity {
   meta {
     name "UserEntity"
-    description "Defines basic user attributes."
+    description "Defines Byway user attributes."
     use module io.picolabs.wrangler alias wrangler
     use module byway.validation.email alias email_validator
     use module io.picolabs.subscription alias subscription
 
-    shares getUser, getItems, isAuthenticated
+    shares getUser, getItems
   }
   global {
     getUser = function() {
       user = ent:user.defaultsTo({})
       // Hide password from API
-      user.delete("password_hash").put("publicEci", meta:eci)
+      user.delete("passwordHash").put("publicEci", meta:eci)
     }
-    isAuthenticated = function() {
-      // Add remote call to remix API validation.
-      privateEci = wrangler:channels(["byway","entity","user","validated"]).head(){"id"}
-      return privateEci
-    }
+    // isAuthenticated = function() {
+    //   // Add remote call to remix API validation.
+    //   privateEci = wrangler:channels(["byway","entity","user","validated"]).head(){"id"}
+    //   return privateEci
+    // }
     getItems = function() {
       agentSubs = subscription:established("Tx_role","agent")
       itemResult = agentSubs.map(function(agentChannel) {
@@ -33,25 +32,25 @@ ruleset byway.user.entity {
   /**
    *  Initializes the user entity pico.
    *  
-   * @param {string} userId
-   * @param {string} firstName
-   * @param {string} surname
-   * @param {string} email
-   * @param {string} passwordHash
-   * @returns void
+   * @param {string} firstName - The user's first name.
+   * @param {string} surname - The user's surname.
+   * @param {string} username - The user's username.
+   * @param {string} email - The user's email address.
+   * @param {string} passwordHash - The user's password hash.
   */
-  rule init {
+  rule initialize_user_entity {
     select when wrangler ruleset_installed
         firstName re#(.+)#
         surname re#(.+)#
-        email re#(.+)#
         username re#(.+)#
+        email re#(.+)#
         passwordHash re#(.+)#
-        setting(firstName, surname, email, username, passwordHash)
-    pre {
-      userDoesNotExist = ent:user{"username"}.isnull()
-    }
-    if email_validator:isValid(email) && userDoesNotExist then noop()
+        setting(firstName, surname, username, email, passwordHash)
+        where event:attrs{"rids"} >< meta:rid
+
+    if email_validator:isValid(email.klog("Email:")) then
+      noop()
+
     fired {
       ent:user{"userId"} := random:uuid()
       ent:user{"firstName"} := firstName
@@ -61,7 +60,7 @@ ruleset byway.user.entity {
       ent:user{"passwordHash"} := passwordHash
     }
     else {
-      log error "User is already initialized."
+      log error "User initialization failed." 
     }
   }
 
