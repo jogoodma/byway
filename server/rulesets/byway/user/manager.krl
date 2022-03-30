@@ -3,13 +3,15 @@ ruleset byway.user.manager {
     name "UserManager"
     description "Manages user entity picos."
     use module io.picolabs.wrangler alias wrangler
-    shares channels
+    use module byway.user.tags alias tags
+    shares userChannels
   }
   global {
 
     // User Entity rulesets that are installed in the managed children.
     userEntityRulesets = [
       "../validation/email",
+      "tags",
       "entity",
     ]
 
@@ -20,9 +22,25 @@ ruleset byway.user.manager {
      * 
      * @returns {map} - A map of user entity picos.
      */
-    channels = function() {
-      ent:userEntityChannels.defaultsTo({})
+    userEntityFamilyChannels = function() {
+      ent:userEntityFamilyChannels.defaultsTo({})
     }
+
+    userChannels = function() {
+      wrangler:channels(tags:userChannelTags().get(["entity", "readOnly"]))
+    }
+  }
+
+  rule initialize_channels {
+    select when wrangler ruleset_installed where event:attrs{"rids"} >< meta:rid
+    fired {
+      raise wrangler event "new_channel_request" attributes {
+        "tags": tags:userChannelTags().get(["manager", "userList"]),
+        "eventPolicy":{"allow": [], "deny": [{"domain": "*", "name": "*"}]},
+        "queryPolicy":{"allow":[{"rid": meta:rid, "name": "userChannels"}], "deny": []},
+      }
+    }
+
   }
 
   /**
@@ -47,7 +65,7 @@ ruleset byway.user.manager {
       setting(firstName, surname, username, email, passwordHash)
     pre {
       picoName = username
-      userEntityExists = channels().klog("userEntityChannels:") >< picoName.klog("picoName:") 
+      userEntityExists = userEntityFamilyChannels().klog("userEntityFamilyChannels:") >< picoName.klog("picoName:") 
     }
     if not userEntityExists.klog("userEnityExists") then 
       send_directive("requesting_new_user", {"name": picoName})
@@ -109,46 +127,31 @@ ruleset byway.user.manager {
       eci = event:attrs{"eci"}
     }
     fired {
-      ent:userEntityChannels{name} := eci
+      ent:userEntityFamilyChannels{name} := eci
     }
   }
 
-  // /**
-  //  * Removes pico entity names from the managed user entity list.
-  //  * 
-  //  * @param {string} name - The name of the user entity pico.
-  //  */
-  // rule removeEntityUsernames {
-  //   select when wrangler child_deleted
-  //   pre {
-  //     deletedName = event:attrs{"name"}.klog("deletedName:")
-  //     entities = channels().delete([deletedName])
-  //   }
-  //   fired {
-  //     log debug "Removing entity name: " + deletedName
-  //     ent:userEntityChannels := entities
-  //   }
-  //   else {
-  //     log debug "Did not remove entity name: " + deletedName
-  //   }
-  // }
-
+  /**
+   * Removes pico entity names from the managed user entity list.
+   * 
+   * @param {string} name - The name of the user entity pico.
+   */
   rule deleteUser {
     select when user delete
     pre {
       name = event:attrs{"name"}
-      exists = ent:userEntityChannels >< name
-      eciToDelete = ent:userEntityChannels{name} 
+      exists = ent:userEntityFamilyChannels >< name
+      eciToDelete = ent:userEntityFamilyChannels{name} 
     }
     if exists && eciToDelete then
-      send_directive("deleteing_user", {"username": name})
+      send_directive("deleting_user", {"username": name})
 
     // Delete user
     fired {
       raise wrangler event "child_deletion_request" attributes {
         "eci": eciToDelete,
       }
-      clear ent:userEntityChannels{name}
+      clear ent:userEntityFamilyChannels{name}
     }
   }
 }

@@ -5,14 +5,18 @@ ruleset byway.user.entity {
     use module io.picolabs.wrangler alias wrangler
     use module byway.validation.email alias email_validator
     use module io.picolabs.subscription alias subscription
+    use module byway.user.tags alias tags
 
     shares getUser, getItems
   }
   global {
     getUser = function() {
-      user = ent:user.defaultsTo({})
-      // Hide password from API
-      user.delete("passwordHash").put("publicEci", meta:eci)
+      publicEci = wrangler:channels(tags:userChannelTags().get(["entity","readOnly"])).head().get("id")
+      user = ent:user
+      // Hide password and userId from API
+      user.delete("passwordHash")
+          .delete("userId")
+          .put("publicEci", publicEci)
     }
     // isAuthenticated = function() {
     //   // Add remote call to remix API validation.
@@ -38,7 +42,7 @@ ruleset byway.user.entity {
    * @param {string} email - The user's email address.
    * @param {string} passwordHash - The user's password hash.
   */
-  rule initialize_user_entity {
+  rule initialize {
     select when wrangler ruleset_installed
         firstName re#(.+)#
         surname re#(.+)#
@@ -63,6 +67,21 @@ ruleset byway.user.entity {
       log error "User initialization failed." 
     }
   }
+
+  rule initialize_read_only_channel {
+    select when wrangler ruleset_installed where event:attrs{"rids"} >< meta:rid
+    noop()
+    fired {
+      log debug "Initializing read only channel in entity."
+      log debug tags:userChannelTags().get(["entity","readOnly"])
+      raise wrangler event "new_channel_request" attributes {
+        "tags": tags:userChannelTags().get(["entity","readOnly"]),
+        "eventPolicy":{"allow": [], "deny": [{"domain": "*", "name": "*"}]},
+        "queryPolicy":{"allow":[{"rid": meta:rid, "name": "getUser"}], "deny": []},
+      }
+    }
+  }
+
 
   rule updateName {
     select when user update
