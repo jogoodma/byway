@@ -1,6 +1,6 @@
 BACKUP_DIR           := $(shell pwd)/backups
 BUYER_SERVICE_NAME   := buyer-server
-BUYER_CONTAINER_NAME := byway_buyer-server_1
+BUYER_CONTAINER_NAME := byway-buyer-server-1
 
 backup:$(BACKUP_DIR)/pico-buyer.tar.gz
 
