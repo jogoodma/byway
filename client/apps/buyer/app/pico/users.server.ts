@@ -8,7 +8,8 @@ export interface User {
   surname: string;
   username: string;
   email: string;
-  publicEci: string;
+  passwordHash: string;
+  publicEci?: string;
   privateEci?: string;
 }
 
@@ -46,6 +47,20 @@ export const fetchUserChannels = async (
   throw Error("Error fetching user channels.");
 };
 
+
+export const createUser = async ({firstName, surname, username, email, passwordHash }: User) => {
+  const resp = await fetch(
+    `http://buyer-server:3000/c/${eci}/query/byway.user.manager/userChannels`,
+    { method: "POST" }
+  );
+  if (resp.ok) {
+    return resp.json();
+  }
+  throw Error("Error fetching user channels.");
+
+}
+
+
 /**
  * Fetches the basic user data from the public ECI.
  *
@@ -54,8 +69,12 @@ export const fetchUserChannels = async (
  *
  */
 export const fetchUser = async (eci: string): Promise<User> => {
+  const userManagerEci = process.env.USER_MANAGER_ECI
+  if (!userManagerEci) {
+    throw new Error("USER_MANAGER_ECI must be set");
+  }
   const resp = await fetch(
-    `http://buyer-server:3000/c/${eci}/query/byway.user.entity/getUser`,
+    `http://buyer-server:3000/c/${userManagerEci}/query/byway.user.manager/getUser`,
     { method: "POST" }
   );
   if (resp.ok) {
