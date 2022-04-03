@@ -8,7 +8,7 @@ export interface HeaderProps {
 const Header: React.FC<HeaderProps> = () => {
   return (
     <header>
-      <h1 className="title">Byway</h1>
+      <h1 className="title text-white">Byway</h1>
       <div className="sub-header">
         <div>
           <nav>

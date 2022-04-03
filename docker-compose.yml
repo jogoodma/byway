@@ -28,18 +28,14 @@ services:
       - buyer
   buyer-client:
     build:
-      context: ./client/apps/buyer
+      context: client/apps/byway-ui
       dockerfile: Dockerfile
-    # REMOVE IN PROD
-    command: ["npm","run","dev"]
+    # COMMENT OUT IN PROD
+    # command: ["npm","run","dev"]
+    # UNCOMMENT IN PROD
+    # command: ["npm","run","dev"]
     environment:
-      - NODE_ENV=development
-    volumes:
-      # REMOVE IN PROD
-      - ./client/apps/buyer/app:/usr/src/app/app
-    # REMOVE IN PROD
-    ports:
-      - "127.0.0.1:8002:8002"
+      - NODE_ENV=production
     networks:
       - buyer
   buyer-server:
@@ -49,9 +45,6 @@ services:
       #- PICO_ENGINE_BASE_URL=http://localhost:3000/
       - NODE_ENV=production
     init: true
-    # Uncomment to access pico engine admin UI
-    #ports:
-      #- "127.0.0.1::3000"
     volumes:
       - buyer-vol:/var/pico-image
       - ./server/rulesets:/usr/src/app/rulesets

@@ -1,0 +1,23 @@
+{
+  "private": true,
+  "name": "byway-ui",
+  "description": "Byway 'Buyer' user interface.",
+  "license": "MIT",
+  "scripts": {
+    "start": "remix-serve build"
+  },
+  "dependencies": {
+    "@mantine/core": "^4.1.0",
+    "@mantine/ssr": "^4.1.0",
+    "@remix-run/react": "1.3.4",
+    "@remix-run/serve": "1.3.4",
+    "remix": "1.3.4"
+  },
+  "devDependencies": {
+    "@remix-run/dev": "1.3.4"
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "sideEffects": false
+}

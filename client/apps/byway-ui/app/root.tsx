@@ -6,8 +6,8 @@ import {
   Scripts,
   ScrollRestoration,
 } from "remix";
-import { Container } from "@mantine/core";
 import type { MetaFunction, LinksFunction } from "remix";
+import tailwindStyles from "~/styles/app.css"
 import styles from "~/styles/global.css";
 import Header from "~/components/Header";
 
@@ -17,17 +17,8 @@ export const meta: MetaFunction = () => {
 
 export const links: LinksFunction = () => {
   return [
+    { rel: "stylesheet", href: tailwindStyles },
     { rel: "stylesheet", href: styles },
-    { rel: "preconnect", href: "https://fonts.googleapis.com" },
-    {
-      rel: "preconnect",
-      href: "https://fonts.gstatic.com",
-      crossOrigin: "true",
-    },
-    {
-      rel: "stylesheet",
-      href: "https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap",
-    },
   ];
 };
 

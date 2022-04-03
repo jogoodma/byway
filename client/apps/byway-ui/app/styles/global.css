@@ -1,5 +1,4 @@
-@import "https://unpkg.com/open-props";
-@import "https://unpkg.com/open-props/normalize.min.css";
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
 
 :root {
   --font-byway: "Roboto";
@@ -16,7 +15,7 @@ html {
 body {
   margin: 0;
   padding: 0;
-  font-family: var(--font-byway);
+  font-family: var(--font-byway), sans-serif;
 }
 
 header {
@@ -52,18 +51,6 @@ header {
 }
 .sub-header a:hover {
   text-decoration: underline;
-}
-
-.title {
-  font-size: 2.75rem;
-  letter-spacing: .4rem;
-  text-transform: uppercase;
-  margin: 0;
-  align-self: center;
-}
-
-.user-status {
-
 }
 
 main h1, main h2, main h3 {
