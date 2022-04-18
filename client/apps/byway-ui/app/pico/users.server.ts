@@ -28,6 +28,18 @@ export interface Directives {
   ];
 }
 
+
+// Set some defaults depending on if we are running in Docker vs. dev mode.
+const PICO_BASE_URI = (process.env.NODE_ENV === 'production')
+  ? 'https://buyer-server:3000'
+  : (process.env?.PICO_BASE_URI)
+    ? process.env.PICO_BASE_URI
+    : (() => {throw new Error("PICO_BASE_URI is not set")})();
+
+const USER_MANAGER_ECI = (process.env?.USER_MANAGER_ECI)
+  ? process.env?.USER_MANAGER_ECI
+  : (() => {throw new Error("USER_MANAGER_ECI is not set")})();
+
 /**
  * Fetches the channel ECIs for users from the user manager.
  *
@@ -38,28 +50,33 @@ export const fetchUserChannels = async (
   eci: string
 ): Promise<UserChannel[]> => {
   const resp = await fetch(
-    `http://buyer-server:3000/c/${eci}/query/byway.user.manager/userChannels`,
+    `${PICO_BASE_URI}/c/${eci}/query/byway.user.manager/userChannels`,
     { method: "POST" }
   );
   if (resp.ok) {
     return resp.json();
   }
-  throw Error("Error fetching user channels.");
+  throw new Error("Error fetching user channels.");
 };
 
-
-export const createUser = async ({firstName, surname, username, email, passwordHash }: User) => {
+export const registerUser = async ({ user }) => {
+  console.log("Registering user...", user);
   const resp = await fetch(
-    `http://buyer-server:3000/c/${eci}/query/byway.user.manager/userChannels`,
-    { method: "POST" }
+    `${PICO_BASE_URI}/c/${USER_MANAGER_ECI}/event-wait/user/new`,
+    {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: "post",
+      body: JSON.stringify(user)
+    }
   );
   if (resp.ok) {
     return resp.json();
   }
-  throw Error("Error fetching user channels.");
-
-}
-
+  throw new Error("Error registering user.");
+};
 
 /**
  * Fetches the basic user data from the public ECI.
@@ -69,18 +86,18 @@ export const createUser = async ({firstName, surname, username, email, passwordH
  *
  */
 export const fetchUser = async (eci: string): Promise<User> => {
-  const userManagerEci = process.env.USER_MANAGER_ECI
+  const userManagerEci = process.env.USER_MANAGER_ECI;
   if (!userManagerEci) {
     throw new Error("USER_MANAGER_ECI must be set");
   }
   const resp = await fetch(
-    `http://buyer-server:3000/c/${userManagerEci}/query/byway.user.manager/getUser`,
+    `${PICO_BASE_URI}/c/${userManagerEci}/query/byway.user.manager/getUser`,
     { method: "POST" }
   );
   if (resp.ok) {
     return resp.json();
   }
-  throw Error("Error fetching user.");
+  throw new Error("Error fetching user.");
 };
 
 export const authenticateUser = async (
@@ -88,7 +105,7 @@ export const authenticateUser = async (
   password: string
 ): Promise<Directives> => {
   const resp = await fetch(
-    `http://buyer-server:3000/c/${eci}/event-wait/user/authenticate`,
+    `${PICO_BASE_URI}/c/${eci}/event-wait/user/authenticate`,
     {
       method: "POST",
       headers: {
@@ -101,16 +118,16 @@ export const authenticateUser = async (
   if (resp.ok) {
     return resp.json();
   }
-  throw Error("Error authenticating user.");
+  throw new Error("Error authenticating user.");
 };
 
 export const getItems = async (eci: string) => {
   const resp = await fetch(
-    `http://buyer-server:3000/c/${eci}/query/byway.user.entity/getItems`,
+    `${PICO_BASE_URI}/c/${eci}/query/byway.user.entity/getItems`,
     { method: "POST" }
   );
   if (resp.ok) {
     return resp.json();
   }
-  throw Error("Error fetching user.");
+  throw new Error("Error fetching user.");
 };

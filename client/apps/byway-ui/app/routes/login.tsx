@@ -1,5 +1,8 @@
-import { useLoaderData, redirect } from "remix";
+import { useState } from 'react';
+import { useLoaderData, redirect, Link } from "remix";
 import type { ActionFunction, LoaderFunction, LinksFunction } from "remix";
+import { faker } from '@faker-js/faker'
+
 import {
   authenticateUser,
   fetchUserChannels,
@@ -9,7 +12,7 @@ import type { User } from "~/pico/users.server";
 import { picoEngine } from "~/cookies";
 
 import styles from "~/styles/login.css";
-import { Button, Center, Container, Divider, Grid } from "@mantine/core";
+import { Divider } from "@mantine/core";
 import UserLogin from "~/components/UserLogin";
 import NewUser from "~/components/NewUser";
 
@@ -43,35 +46,43 @@ export const action: ActionFunction = async ({ request }) => {
 
 export let loader: LoaderFunction = async () => {
   // TODO This ECI is hard coded!!!
-  const userChannels = await fetchUserChannels("cl05vgib800hd07qh5hgm0xse");
-  const userResponses = await Promise.allSettled(
-    userChannels?.map(async (channel) => await fetchUser(channel.eci))
-  );
-  return (
-    userResponses.filter((res) => res.status === "fulfilled") as
-      | PromiseFulfilledResult<User>[]
-      | undefined
-  )?.map((u) => u.value);
+  //const userChannels = ['cl05w5dlr002r08qhbhpm4nra', 'cl064ajc2005e08qh8bp42pwo']
+  // const userChannels = await fetchUserChannels("cl05vgib800hd07qh5hgm0xse");
+  // const userResponses = await Promise.allSettled(
+  //   userChannels?.map(async (channel) => await fetchUser(channel.eci))
+  // );
+  // return (
+  //   userResponses.filter((res) => res.status === "fulfilled") as
+  //     | PromiseFulfilledResult<User>[]
+  //     | undefined
+  // )?.map((u) => u.value);
+  const users = [];
+  for (let i = 0; i < 2; i++) {
+    users.push({
+      firstName: faker.name.firstName(),
+      surname: faker.name.lastName(),
+      email: faker.internet.email(),
+    })
+  }
+  return users;
+
 };
 
 const Login = () => {
   const users: User[] = useLoaderData();
+  const [ showPassword, setShowPassword ] = useState(false);
   return (
-    <main>
-      <div className="login-container">
-        <h1>Login</h1>
+    <main className="m-10 p-10 bg-white rounded-lg">
+      <section>
+        <h1 className="text-slate-600 text-4xl mb-4">Login</h1>
         <Divider />
-        <Grid justify="center" gutter="xl" className="user-grid">
-          {users.map((u) => (
-            <Grid.Col md={4} lg={3} key={u.publicEci}>
-              <UserLogin user={u} />
-            </Grid.Col>
-          ))}
-          <Grid.Col md={4} lg={3}>
-            <NewUser />
-          </Grid.Col>
-        </Grid>
-      </div>
+        <div className="mt-10 flex flex-wrap justify-center gap-10 md:gap-20">
+          {users.map((user) => <UserLogin user={user} key={user.email} />)}
+          <Link to={`/users/new`} className="py-1 px-4 bg-slate-400 text-white rounded-full self-center ring-2 ring-gray-600">
+            Register New User
+          </Link>
+        </div>
+      </section>
     </main>
   );
 };
