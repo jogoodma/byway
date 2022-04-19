@@ -28,12 +28,11 @@ services:
       - buyer
   buyer-client:
     build:
-      context: client/apps/byway-ui
+      context: ./client
       dockerfile: Dockerfile
-    # COMMENT OUT IN PROD
-    # command: ["npm","run","dev"]
-    # UNCOMMENT IN PROD
-    # command: ["npm","run","dev"]
+    env_file:
+      - ./client/apps/byway-ui/.env
+#      - ./client/apps/byway-ui/.dev.env
     environment:
       - NODE_ENV=production
     networks:
