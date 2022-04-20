@@ -16,7 +16,8 @@ const UserLogin: React.FC<UserLoginProps> = ({ user }) => {
         {user.firstName} {user.surname}
       </div>
     </div>
-    <input type="password" placeholder="Enter password" className="rounded-lg p-2 mb-4 bg-blue-900 text-white w-full" />
+    <input type="password" name="password" placeholder="Enter password" className="form-input rounded-full p-2 mb-4 bg-blue-200 w-full" />
+    <input type="hidden" name="eci" value={user.publicEci} />
     <button className="rounded-full w-full p-2 mb-4 bg-blue-900 text-white">Login</button>
   </div>
   );

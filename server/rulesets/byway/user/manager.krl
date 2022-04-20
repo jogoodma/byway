@@ -4,7 +4,7 @@ ruleset byway.user.manager {
     description "Manages user entity picos."
     use module io.picolabs.wrangler alias wrangler
     use module byway.user.tags alias tags
-    shares userChannels
+    shares listUsers
   }
   global {
 
@@ -15,19 +15,12 @@ ruleset byway.user.manager {
       "entity",
     ]
 
-    /**
-     * Returns a map of existing user entity picos.
-     * key - pico name
-     * value - family ECI
-     * 
-     * @returns {map} - A map of user entity picos.
-     */
-    userEntityFamilyChannels = function() {
-      ent:userEntityFamilyChannels.defaultsTo({})
-    }
-
-    userChannels = function() {
-      wrangler:channels(tags:userChannelTags().get(["entity", "readOnly"]))
+    listUsers = function() {
+      ecis = ent:userEntityFamilyChannels.values().defaultsTo([])
+      users = ecis.map(function(eci) {
+        return wrangler:picoQuery(eci, "byway.user.entity", "getUser", {})
+      })
+      return users
     }
   }
 
@@ -36,8 +29,9 @@ ruleset byway.user.manager {
     fired {
       raise wrangler event "new_channel_request" attributes {
         "tags": tags:userChannelTags().get(["manager", "userList"]),
-        "eventPolicy":{"allow": [], "deny": [{"domain": "*", "name": "*"}]},
-        "queryPolicy":{"allow":[{"rid": meta:rid, "name": "userChannels"}], "deny": []},
+        "eventPolicy":{"allow": [{"domain": "user", "name": "new"}, {"domain": "user", "name": "delete"}],
+                       "deny": []},
+        "queryPolicy":{"allow":[{"rid": meta:rid, "name": "listUsers"}], "deny": []},
       }
     }
 
@@ -65,7 +59,7 @@ ruleset byway.user.manager {
       setting(firstName, surname, username, email, passwordHash)
     pre {
       picoName = username
-      userEntityExists = userEntityFamilyChannels().klog("userEntityFamilyChannels:") >< picoName.klog("picoName:") 
+      userEntityExists = ent:userEntityFamilyChannels.klog("userEntityFamilyChannels:") >< picoName.klog("picoName:") 
     }
     if not userEntityExists.klog("userEnityExists") then 
       send_directive("requesting_new_user", {"name": picoName})

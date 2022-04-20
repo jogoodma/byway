@@ -9,11 +9,11 @@ ruleset byway.user.tags {
     userChannelTags = function() {
       return {
         "manager": {
-          "userList": ["byway", "user", "manager", "list"]
+          "userList": ["byway", "user", "manager"]
         },
         "entity": {
           "readOnly": ["byway","user", "entity", "read-only"],
-          "readWrite": ["byway", "user", "entity", "read-write"]
+          "validated": ["byway", "user", "entity", "validated"],
         },
       }
     }

@@ -7,11 +7,14 @@ ruleset byway.user.entity {
     use module io.picolabs.subscription alias subscription
     use module byway.user.tags alias tags
 
-    shares getUser, getItems
+    shares getUser, getItems, getReadOnlyEci
   }
   global {
+    getReadOnlyEci = function() {
+      wrangler:channels(tags:userChannelTags().get(["entity","readOnly"])).head().get("id")
+    }
     getUser = function() {
-      publicEci = wrangler:channels(tags:userChannelTags().get(["entity","readOnly"])).head().get("id")
+      publicEci = getReadOnlyEci()
       user = ent:user
       // Hide password and userId from API
       user.delete("passwordHash")
@@ -68,8 +71,15 @@ ruleset byway.user.entity {
     }
   }
 
-  rule initialize_read_only_channel {
+  rule initialize_channels {
     select when wrangler ruleset_installed where event:attrs{"rids"} >< meta:rid
+    pre {
+      allowQueryPolicy = [
+        {"rid": meta:rid, "name":"getUser"},
+        {"rid": meta:rid, "name":"getReadOnlyEci"},
+      ]
+
+    }
     noop()
     fired {
       log debug "Initializing read only channel in entity."
@@ -77,7 +87,12 @@ ruleset byway.user.entity {
       raise wrangler event "new_channel_request" attributes {
         "tags": tags:userChannelTags().get(["entity","readOnly"]),
         "eventPolicy":{"allow": [], "deny": [{"domain": "*", "name": "*"}]},
-        "queryPolicy":{"allow":[{"rid": meta:rid, "name": "getUser"}], "deny": []},
+        "queryPolicy":{"allow": allowQueryPolicy, "deny": []},
+      }
+      raise wrangler event "new_channel_request" attributes {
+        "tags": tags:userChannelTags().get(["entity","validated"]),
+        "eventPolicy":{"allow": [{"domain": "user", "name": "update"}], "deny": []},
+        "queryPolicy":{"allow": allowQueryPolicy, "deny": []},
       }
     }
   }
@@ -125,12 +140,6 @@ ruleset byway.user.entity {
     else {
       log error "Invalid password supplied."
     }
-  }
-
-  rule deleteUser {
-    select when user delete
-    // Delete user
-    noop()
   }
 
   rule authenticateUser {

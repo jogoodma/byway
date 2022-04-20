@@ -41,16 +41,13 @@ const USER_MANAGER_ECI = (process.env?.USER_MANAGER_ECI)
   : (() => {throw new Error("USER_MANAGER_ECI is not set")})();
 
 /**
- * Fetches the channel ECIs for users from the user manager.
+ * Get a list of Byway users.
  *
- * @param eci - The ECI of the user manager.
- * @return {Promise<UserChannel[]>} - A promise that resolves an array of user channel ECIs
+ * @return {Promise<User[]>} - A promise that resolves an array of users.
  */
-export const fetchUserChannels = async (
-  eci: string
-): Promise<UserChannel[]> => {
+export const listUsers = async (): Promise<User[]> => {
   const resp = await fetch(
-    `${PICO_BASE_URI}/c/${eci}/query/byway.user.manager/userChannels`,
+    `${PICO_BASE_URI}/c/${USER_MANAGER_ECI}/query/byway.user.manager/listUsers`,
     { method: "POST" }
   );
   if (resp.ok) {

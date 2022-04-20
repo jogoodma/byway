@@ -43,10 +43,13 @@ export default function App() {
                     <Link to="/" className="py-1 px-4">Home</Link>
                   </li>
                   <li>
-                    <Link to="/stores" className="py-1 px-4">My Stores</Link>
+                    <Link to="/search" className="py-1 px-4">Search</Link>
                   </li>
                   <li>
-                    <Link to="/marketplace" className="py-1 px-4">Requests</Link>
+                    <Link to="/stores" className="py-1 px-4">Stores</Link>
+                  </li>
+                  <li>
+                    <Link to="/requests" className="py-1 px-4">Requests</Link>
                   </li>
                 </ol>
               </nav>
