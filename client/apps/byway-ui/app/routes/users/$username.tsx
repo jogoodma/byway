@@ -1,4 +1,4 @@
-import { useParams } from 'remix';
+import { useParams } from "remix";
 
 const UserRoute = () => {
   const { username } = useParams();
@@ -10,4 +10,4 @@ const UserRoute = () => {
   );
 };
 
-export default UserRoute
+export default UserRoute;

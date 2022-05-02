@@ -1,4 +1,4 @@
-import { useParams } from 'remix';
+import { useParams } from "remix";
 
 const RequestEditRoute = () => {
   const { request } = useParams();
@@ -10,4 +10,4 @@ const RequestEditRoute = () => {
   );
 };
 
-export default RequestEditRoute
+export default RequestEditRoute;

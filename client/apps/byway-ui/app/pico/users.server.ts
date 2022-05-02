@@ -28,17 +28,21 @@ export interface Directives {
   ];
 }
 
-
 // Set some defaults depending on if we are running in Docker vs. dev mode.
-const PICO_BASE_URI = (process.env.NODE_ENV === 'production')
-  ? 'https://buyer-server:3000'
-  : (process.env?.PICO_BASE_URI)
-    ? process.env.PICO_BASE_URI
-    : (() => {throw new Error("PICO_BASE_URI is not set")})();
+const BUYER_PICO_BASE_URI =
+  process.env.NODE_ENV === "production"
+    ? "https://buyer-server:3000"
+    : process.env?.BUYER_PICO_BASE_URI
+    ? process.env.BUYER_PICO_BASE_URI
+    : (() => {
+        throw new Error("BUYER_PICO_BASE_URI is not set");
+      })();
 
-const USER_MANAGER_ECI = (process.env?.USER_MANAGER_ECI)
+const USER_MANAGER_ECI = process.env?.USER_MANAGER_ECI
   ? process.env?.USER_MANAGER_ECI
-  : (() => {throw new Error("USER_MANAGER_ECI is not set")})();
+  : (() => {
+      throw new Error("USER_MANAGER_ECI is not set");
+    })();
 
 /**
  * Get a list of Byway users.
@@ -47,7 +51,7 @@ const USER_MANAGER_ECI = (process.env?.USER_MANAGER_ECI)
  */
 export const listUsers = async (): Promise<User[]> => {
   const resp = await fetch(
-    `${PICO_BASE_URI}/c/${USER_MANAGER_ECI}/query/byway.user.manager/listUsers`,
+    `${BUYER_PICO_BASE_URI}/c/${USER_MANAGER_ECI}/query/byway.user.manager/listUsers`,
     { method: "POST" }
   );
   if (resp.ok) {
@@ -59,14 +63,14 @@ export const listUsers = async (): Promise<User[]> => {
 export const registerUser = async ({ user }) => {
   console.log("Registering user...", user);
   const resp = await fetch(
-    `${PICO_BASE_URI}/c/${USER_MANAGER_ECI}/event-wait/user/new`,
+    `${BUYER_PICO_BASE_URI}/c/${USER_MANAGER_ECI}/event-wait/user/new`,
     {
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
       method: "post",
-      body: JSON.stringify(user)
+      body: JSON.stringify(user),
     }
   );
   if (resp.ok) {
@@ -88,7 +92,7 @@ export const fetchUser = async (eci: string): Promise<User> => {
     throw new Error("USER_MANAGER_ECI must be set");
   }
   const resp = await fetch(
-    `${PICO_BASE_URI}/c/${userManagerEci}/query/byway.user.manager/getUser`,
+    `${BUYER_PICO_BASE_URI}/c/${userManagerEci}/query/byway.user.manager/getUser`,
     { method: "POST" }
   );
   if (resp.ok) {
@@ -102,7 +106,7 @@ export const authenticateUser = async (
   password: string
 ): Promise<Directives> => {
   const resp = await fetch(
-    `${PICO_BASE_URI}/c/${eci}/event-wait/user/authenticate`,
+    `${BUYER_PICO_BASE_URI}/c/${eci}/event-wait/user/authenticate`,
     {
       method: "POST",
       headers: {
@@ -120,7 +124,7 @@ export const authenticateUser = async (
 
 export const getItems = async (eci: string) => {
   const resp = await fetch(
-    `${PICO_BASE_URI}/c/${eci}/query/byway.user.entity/getItems`,
+    `${BUYER_PICO_BASE_URI}/c/${eci}/query/byway.user.entity/getItems`,
     { method: "POST" }
   );
   if (resp.ok) {

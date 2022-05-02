@@ -1,4 +1,4 @@
-import { useParams } from 'remix';
+import { useParams } from "remix";
 
 const RequestRoute = () => {
   const { request } = useParams();
@@ -10,4 +10,4 @@ const RequestRoute = () => {
   );
 };
 
-export default RequestRoute
+export default RequestRoute;

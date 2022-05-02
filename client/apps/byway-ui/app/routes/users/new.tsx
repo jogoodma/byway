@@ -1,24 +1,25 @@
-import { redirect, json, useActionData } from 'remix'
+import { redirect, json, useActionData } from "remix";
 import type { ActionFunction } from "remix";
-import {
-  registerUser
-} from "~/pico/users.server";
+import { registerUser } from "~/pico/users.server";
 import RegisterUser from "~/components/RegisterUser";
-import { schema as userSchema, User } from "~/components/RegisterUser/RegisterUser.validation";
+import {
+  schema as userSchema,
+  User,
+} from "~/components/RegisterUser/RegisterUser.validation";
 
-export const action: ActionFunction = async ({request}) => {
+export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
   const user: User = {
-    firstName: formData.get('firstName') as string,
-    surname: formData.get('surname') as string,
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
-    passwordConfirm: formData.get('passwordConfirm') as string,
+    firstName: formData.get("firstName") as string,
+    surname: formData.get("surname") as string,
+    email: formData.get("email") as string,
+    password: formData.get("password") as string,
+    passwordConfirm: formData.get("passwordConfirm") as string,
   };
   const userErrors = {};
-  await userSchema.validate(user).catch(e => {
-    const field = e?.path ?? 'form'
-    userErrors[field] = e?.errors.join(' ')
+  await userSchema.validate(user).catch((e) => {
+    const field = e?.path ?? "form";
+    userErrors[field] = e?.errors.join(" ");
   });
   // console.log("Error", userErrors);
   // console.log("User", user);
@@ -31,19 +32,18 @@ export const action: ActionFunction = async ({request}) => {
   // //const resp = await registerUser({user})
   // console.log(user)
   return null;
-}
+};
 
 const NewUserRoute = () => {
   const errors = useActionData();
-  console.log(errors)
+  console.log(errors);
 
   return (
     <section>
       <h1 className="text-slate-600 text-4xl mb-4">Register New User</h1>
-      <RegisterUser errors={errors}/>
+      <RegisterUser errors={errors} />
     </section>
   );
+};
 
-}
-
-export default NewUserRoute
+export default NewUserRoute;

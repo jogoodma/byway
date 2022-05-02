@@ -1,4 +1,4 @@
-import { useParams } from 'remix';
+import { useParams } from "remix";
 
 const StoreEditRoute = () => {
   const { store } = useParams();
@@ -10,4 +10,4 @@ const StoreEditRoute = () => {
   );
 };
 
-export default StoreEditRoute
+export default StoreEditRoute;

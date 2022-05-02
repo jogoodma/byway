@@ -1,0 +1,7 @@
+# See https://caddyserver.com/docs/caddyfile for details.
+# Use localhost for dev, change to a proper domain for production.
+# When a domain is associated Caddy will automatically setup SSL certs, otherwise it will use
+# a self signed cert.
+http://localhost:80
+
+reverse_proxy matcher:3000

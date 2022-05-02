@@ -40,16 +40,19 @@ export default function App() {
               <nav>
                 <ol className="flex flex-row flex-wrap md:gap-6 gap-2 text-lg">
                   <li>
-                    <Link to="/" className="py-1 px-4">Home</Link>
+                    <Link to="/" className="py-1 px-4">
+                      Home
+                    </Link>
                   </li>
                   <li>
-                    <Link to="/search" className="py-1 px-4">Search</Link>
+                    <Link to="/stores" className="py-1 px-4">
+                      My Stores
+                    </Link>
                   </li>
                   <li>
-                    <Link to="/stores" className="py-1 px-4">Stores</Link>
-                  </li>
-                  <li>
-                    <Link to="/requests" className="py-1 px-4">Requests</Link>
+                    <Link to="/requests" className="py-1 px-4">
+                      Requests
+                    </Link>
                   </li>
                 </ol>
               </nav>
@@ -60,7 +63,9 @@ export default function App() {
           </div>
         </header>
         <Outlet />
-        <footer className="h-32 shrink-0 text-white bg-black w-full text-center">Byway footer</footer>
+        <footer className="h-32 shrink-0 text-white bg-black w-full text-center">
+          Byway footer
+        </footer>
         <ScrollRestoration />
         <Scripts />
         {process.env.NODE_ENV === "development" && <LiveReload />}

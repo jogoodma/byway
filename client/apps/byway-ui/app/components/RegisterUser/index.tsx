@@ -1,17 +1,15 @@
-import {Form} from "remix";
+import { Form } from "remix";
 import { TextInput } from "@mantine/core";
 
 type RegisteruserProps = {
   errors: {
-    [key: string]: string
-  }
+    [key: string]: string;
+  };
 };
 
-const RegisterUser = ({errors}: RegisteruserProps) => {
+const RegisterUser = ({ errors }: RegisteruserProps) => {
   return (
-    <Form
-      method="post"
-      className="w-full max-w-lg">
+    <Form method="post" className="w-full max-w-lg">
       <div className="flex flex-col flex-wrap -mx-3 mb-6 gap-8">
         <div className="w-full px-3">
           <TextInput
@@ -61,13 +59,16 @@ const RegisterUser = ({errors}: RegisteruserProps) => {
             error={errors?.passwordConfirm}
           />
         </div>
-        <button type="submit" role="submit" className="bg-blue-500 hover:bg-blue-700 self-end text-white py-2 px-4 mr-3 rounded focus:outline-none focus:shadow-outline">
+        <button
+          type="submit"
+          role="submit"
+          className="bg-blue-500 hover:bg-blue-700 self-end text-white py-2 px-4 mr-3 rounded focus:outline-none focus:shadow-outline"
+        >
           Register
         </button>
       </div>
-
     </Form>
-  )
-}
+  );
+};
 
 export default RegisterUser;

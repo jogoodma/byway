@@ -1,12 +1,8 @@
-import { useState } from 'react';
+import { useState } from "react";
 import { useLoaderData, redirect, Link, Form } from "remix";
 import type { ActionFunction, LoaderFunction, LinksFunction } from "remix";
 
-import {
-  authenticateUser,
-  listUsers,
-  fetchUser,
-} from "~/pico/users.server";
+import { authenticateUser, listUsers, fetchUser } from "~/pico/users.server";
 import type { User } from "~/pico/users.server";
 import { picoEngine } from "~/cookies";
 
@@ -50,7 +46,7 @@ export let loader: LoaderFunction = async () => {
 
 const Login = () => {
   const users: User[] = useLoaderData();
-  const [ showPassword, setShowPassword ] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   return (
     <main className="m-10 p-10 bg-white rounded-lg">
       <section>
@@ -58,9 +54,14 @@ const Login = () => {
         <Divider />
         <div className="mt-10 flex flex-wrap justify-center gap-10 md:gap-20">
           <Form method="post">
-            {users.map((user) => <UserLogin user={user} key={user.email} />)}
+            {users.map((user) => (
+              <UserLogin user={user} key={user.email} />
+            ))}
           </Form>
-          <Link to={`/users/new`} className="py-1 px-4 bg-slate-400 text-white rounded-full self-center ring-2 ring-gray-600">
+          <Link
+            to={`/users/new`}
+            className="py-1 px-4 bg-slate-400 text-white rounded-full self-center ring-2 ring-gray-600"
+          >
             Register New User
           </Link>
         </div>

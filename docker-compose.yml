@@ -37,6 +37,7 @@ services:
       - NODE_ENV=production
     networks:
       - buyer
+      - matcher
   buyer-server:
     build:
       context: ./server
@@ -49,6 +50,7 @@ services:
       - ./server/rulesets:/usr/src/app/rulesets
     networks:
       - buyer
+      - matcher
   seller-server:
     build:
       context: ./server
@@ -61,16 +63,49 @@ services:
       - seller-vol:/var/pico-image
     networks:
       - seller
+      - matcher
+  matcher:
+    build:
+      context: ./server
+    init: true
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "127.0.0.1::3000"
+    volumes:
+      - matcher-vol:/var/pico-image
+      - ./server/rulesets:/usr/src/app/rulesets
+    networks:
+      - matcher
+      - seller
+      - buyer
+  matcher-pico-admin:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - matcher
+    ports:
+      - "127.0.0.1::80"
+    volumes:
+      - ./proxy/Caddyfile-matcher-proxy:/etc/caddy/Caddyfile
+      - caddy_matcher_proxy_data:/data
+      - caddy_matcher_proxy_config:/config
+    networks:
+      - matcher
 
 networks:
   buyer:
   seller:
+  matcher:
 
 volumes:
   buyer-vol: {}
   seller-vol: {}
+  matcher-vol: {}
   caddy_buyer_config: {}
   caddy_buyer_data: {}
   caddy_buyer_proxy_config: {}
   caddy_buyer_proxy_data: {}
+  caddy_matcher_proxy_config: {}
+  caddy_matcher_proxy_data: {}
 
