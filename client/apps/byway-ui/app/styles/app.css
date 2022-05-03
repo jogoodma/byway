@@ -2713,6 +2713,11 @@ body[dir="rtl"] .checkbox:checked,
   background-color: hsl(var(--b1) / var(--tw-bg-opacity));
 }
 
+.table-zebra tbody tr:nth-child(even) th, .table-zebra tbody tr:nth-child(even) td {
+  --tw-bg-opacity: 1;
+  background-color: hsl(var(--b2, var(--b1)) / var(--tw-bg-opacity));
+}
+
 .textarea:focus {
   outline: 2px solid hsla(var(--bc) / 0.2);
   outline-offset: 2px;
@@ -2852,6 +2857,14 @@ body[dir="rtl"] .checkbox:checked,
 
 .m-10 {
   margin: 2.5rem;
+}
+
+.m-2 {
+  margin: 0.5rem;
+}
+
+.m-1 {
+  margin: 0.25rem;
 }
 
 .-mx-3 {
@@ -3184,6 +3197,10 @@ body[dir="rtl"] .checkbox:checked,
   text-align: center;
 }
 
+.text-right {
+  text-align: right;
+}
+
 .text-5xl {
   font-size: 3rem;
   line-height: 1;
@@ -3309,6 +3326,12 @@ body[dir="rtl"] .checkbox:checked,
 
 .filter {
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
+.mockup-phone .hover\:display:hover {
+  overflow: hidden;
+  border-radius: 40px;
+  margin-top: -25px;
 }
 
 .hover\:bg-blue-700:hover {

@@ -44,7 +44,9 @@ const SearchIndexRoute = () => {
       {layout === "cards" ? (
         <ResultCards matches={results?.matches ?? []} />
       ) : null}
-      {/*{layout === 'table' ? <ResultTable matches={results?.matches ?? []}/> : null }*/}
+      {layout === "table" ? (
+        <ResultTable matches={results?.matches ?? []} />
+      ) : null}
       <section>
         {results.matches.length === 0 && (
           <div className="card w-80 bg-gray-200 shadow-xl">
