@@ -37,7 +37,7 @@ ruleset byway.store.item {
     pre {
       item_id = id.defaultsTo(random:uuid())
       image_url = event:attrs{"image_url"}
-      tags = event:attrs{"tags"}.defaultsTo("").split(",")
+      tags = event:attrs{"tags"}.defaultsTo("").split(re#\s*,\s*#).map(function(tag) { tag.trim() }).filter(function(tag) { tag.length() > 0 })
     }
 
     fired {

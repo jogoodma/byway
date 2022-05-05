@@ -5,7 +5,6 @@ import type { BywayStore } from "~/pico/store.server";
 
 export let loader: LoaderFunction = async () => {
   const stores = await listStores();
-  console.log("stores", stores);
   return stores ? stores : [];
 };
 

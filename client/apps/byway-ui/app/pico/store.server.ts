@@ -138,3 +138,52 @@ export const newItem = async ({
   }
   throw new Error("Error creating new item.");
 };
+
+/**
+ * Calls the getItem endpoint of the item entity Pico.
+ *
+ * @return {Promise<BywayStoreItem>} A promise that resolves to an array of Byway store items.
+ */
+export const getItem = async (
+  itemEci: string
+): Promise<BywayStoreItem> => {
+  console.log("Fetching item...", itemEci);
+  const resp = await fetch(
+    `${STORE_PICO_BASE_URI}/c/${itemEci}/query/byway.store.item/getItem`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    }
+  );
+  if (resp.ok) {
+    return resp.json();
+  }
+  throw new Error("Error while fetching store item.");
+};
+
+/**
+ * Calls the 'item:update' event endpoint of the item entity Pico.
+ *
+ * @return {Promise} A promise that resolves to a Byway directive response.
+ */
+export const updateItem = async (
+  itemEci: string
+): Promise => {
+  const resp = await fetch(
+    `${STORE_PICO_BASE_URI}/c/${itemEci}/query/byway.store.item/getItem`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    }
+  );
+  if (resp.ok) {
+    return resp.json();
+  }
+  throw new Error("Error while fetching store item.");
+};
