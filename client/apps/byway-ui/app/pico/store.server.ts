@@ -20,6 +20,14 @@ export type BywayStore = {
   publicEci?: string;
 };
 
+export type BywayStoreItem = {
+  id: string;
+  name: string;
+  description?: string;
+  tags: string[];
+  publicEci?: string;
+};
+
 /**
  * Calls the listStores endpoint of the store manager Pico.
  *
@@ -59,4 +67,74 @@ export const createStore = async ({ store }: { store: BywayStore }) => {
     return resp.json();
   }
   throw new Error("Error creating new store.");
+};
+
+/**
+ * Calls the getStore endpoint of the store entity Pico.
+ *
+ * @return {Promise<BywayStore>} A promise that resolves to a Byway store.
+ */
+export const getStore = async (storeEci: string): Promise<BywayStore> => {
+  const resp = await fetch(
+    `${STORE_PICO_BASE_URI}/c/${storeEci}/query/byway.store.entity/getStore`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    }
+  );
+  if (resp.ok) {
+    return resp.json();
+  }
+  throw new Error("Error while fetching store metadata.");
+};
+
+/**
+ * Calls the getItems endpoint of the store entity Pico.
+ *
+ * @return {Promise<BywayStoreItem[]>} A promise that resolves to an array of Byway store items.
+ */
+export const getStoreItems = async (
+  storeEci: string
+): Promise<BywayStoreItem[]> => {
+  const resp = await fetch(
+    `${STORE_PICO_BASE_URI}/c/${storeEci}/query/byway.store.entity/getItems`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    }
+  );
+  if (resp.ok) {
+    return resp.json();
+  }
+  throw new Error("Error while fetching store items.");
+};
+
+export const newItem = async ({
+  storeEci,
+  item,
+}: {
+  storeEci: string;
+  item: BywayStoreItem;
+}) => {
+  const resp = await fetch(
+    `${STORE_PICO_BASE_URI}/c/${storeEci}/event-wait/item/new`,
+    {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      method: "post",
+      body: JSON.stringify(item),
+    }
+  );
+  if (resp.ok) {
+    return resp.json();
+  }
+  throw new Error("Error creating new item.");
 };

@@ -15,10 +15,11 @@ ruleset byway.store.manager {
     ]
 
     listStores = function() {
-      ecis = ent:storeEntityFamilyChannels.values().defaultsTo([])
+      ecis = ent:storeEntityFamilyChannels.defaultsTo({}).values()
+      existingChildren = wrangler:children().map(function(child) { child["eci"] })
       stores = ecis.map(function(eci) {
-        return wrangler:picoQuery(eci, "byway.store.entity", "getStore", {})
-      })
+        return (existingChildren >< eci) => wrangler:picoQuery(eci, "byway.store.entity", "getStore", {}) | null
+      }).filter(function(store) { store != null })
       return stores
     }
   }

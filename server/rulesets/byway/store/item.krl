@@ -37,6 +37,7 @@ ruleset byway.store.item {
     pre {
       item_id = id.defaultsTo(random:uuid())
       image_url = event:attrs{"image_url"}
+      tags = event:attrs{"tags"}.defaultsTo("").split(",")
     }
 
     fired {
@@ -44,6 +45,7 @@ ruleset byway.store.item {
       ent:item{"name"} := name
       ent:item{"description"} := description
       ent:item{"image_url"} := image_url 
+      ent:item{"tags"} := tags
     }
     else {
       log error "Item initialization failed." 
