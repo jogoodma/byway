@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { useTable } from "react-table";
 import { Form, Link } from "remix";
-import { Cash, Edit } from "tabler-icons-react";
-import {BywayStoreItem} from "~/pico/store.server";
+import { Trash, Cash, Edit } from "tabler-icons-react";
+import { BywayStoreItem } from "~/pico/store.server";
 
 export type ItemTableProps = {
   items: BywayStoreItem[];
@@ -44,9 +44,16 @@ const ItemTable = ({ items, storeEci }: ItemTableProps) => {
           return (
             <div className="flex flex-row gap-2">
               <Link to={`/stores/${storeEci}/item/${item.publicEci}/edit`}>
-                <button className="btn btn-circle btn-xs" type="submit" role="submit" title="Edit">
-                  <Edit size={20} />
-                </button>
+                <div className="tooltip" data-tip="Edit">
+                  <button
+                    className="btn btn-circle btn-xs"
+                    type="submit"
+                    role="submit"
+                    title="Edit"
+                  >
+                    <Edit size={20} />
+                  </button>
+                </div>
               </Link>
               <Form method="post" action="/requests/new" reloadDocument>
                 <input
@@ -54,10 +61,29 @@ const ItemTable = ({ items, storeEci }: ItemTableProps) => {
                   name="request"
                   value={JSON.stringify(item)}
                 />
-                <button className="btn btn-circle btn-xs" type="submit" role="submit" title="Sell">
-                  <Cash size={20} />
-                </button>
+                <div className="tooltip" data-tip="Sell">
+                  <button
+                    className="btn btn-circle btn-xs"
+                    type="submit"
+                    role="submit"
+                    title="Sell"
+                  >
+                    <Cash size={20} />
+                  </button>
+                </div>
               </Form>
+              <Link to={`/stores/${storeEci}/item/${item.publicEci}/delete`}>
+                <div className="tooltip" data-tip="Delete">
+                  <button
+                    className="btn btn-circle btn-xs"
+                    type="submit"
+                    role="submit"
+                    title="Delete"
+                  >
+                    <Trash size={20} />
+                  </button>
+                </div>
+              </Link>
             </div>
           );
         },

@@ -104,4 +104,16 @@ ruleset byway.store.item {
       ent:item{"image_url"} := image_url
     }
   }
+
+  rule updateTags {
+    select when item update
+        tags re#(.+)#
+        setting(tags)
+    pre {
+      splitTags = event:attrs{"tags"}.defaultsTo("").split(re#\s*,\s*#).map(function(tag) { tag.trim() }).filter(function(tag) { tag.length() > 0 })
+    }
+    fired {
+      ent:item{"tags"} := splitTags
+    }
+  }
 }

@@ -6,15 +6,15 @@ ruleset byway.request.entity {
     use module io.picolabs.subscription alias subscription
     use module byway.request.tags alias tags
 
-    shares getRequest, getReadOnlyEci
+    shares getRequest, getPublicEci
   }
   global {
-    getReadOnlyEci = function() {
-      wrangler:channels(tags:requestChannelTags().get(["request","readOnly"])).head().get("id")
+    getPublicEci = function() {
+      wrangler:channels(tags:requestChannelTags().get(["request","validated"])).head().get("id")
     }
 
     getRequest = function() {
-      publicEci = getReadOnlyEci()
+      publicEci = getPublicEci()
       request = ent:request
       request.put("publicEci", publicEci)
     }
@@ -57,7 +57,7 @@ ruleset byway.request.entity {
     pre {
       allowQueryPolicy = [
         {"rid": meta:rid, "name":"getRequest"},
-        {"rid": meta:rid, "name":"getReadOnlyEci"},
+        {"rid": meta:rid, "name":"getPublicEci"},
       ]
 
     }

@@ -1,21 +1,32 @@
-import {Form, useParams, useLoaderData } from "remix";
-import type { LoaderFunction } from "remix";
-import {getItem} from "~/pico/store.server";
-import type {BywayStoreItem} from "~/pico/store.server";
+import { Form, redirect, useParams, useLoaderData } from "remix";
+import type { ActionFunction, LoaderFunction } from "remix";
+import { getItem, updateItem } from "~/pico/store.server";
+import type { BywayStoreItem } from "~/pico/store.server";
 
-export const loader: LoaderFunction = async ({params}) => {
-  const {itemid} = params;
+export const loader: LoaderFunction = async ({ params }) => {
+  const { itemid } = params;
   const item = await getItem(itemid);
-  return {item};
-}
+  return { item };
+};
 
+export const action: ActionFunction = async ({ request, params }) => {
+  const { store, itemid = "" } = params;
+  const formData = await request.formData();
+  const item = {
+    name: formData.get("name"),
+    description: formData.get("description") ?? "",
+    tags: formData.get("tags") ?? "",
+  };
+  await updateItem(itemid, item);
+  return redirect(`/stores/${store}`);
+};
 
 const ItemEditRoute = () => {
   const { item } = useLoaderData();
   // Refactor this to use a shared item form with the $store.item.new route.
   return (
     <div>
-      <h1>Item Edit Route</h1>
+      <h1>Edit Item</h1>
       <Form method="post" className="w-full max-w-lg">
         <div className="flex flex-wrap -mx-3 mb-6">
           <div className="w-full px-3">

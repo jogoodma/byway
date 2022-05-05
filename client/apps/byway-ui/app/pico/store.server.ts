@@ -144,9 +144,7 @@ export const newItem = async ({
  *
  * @return {Promise<BywayStoreItem>} A promise that resolves to an array of Byway store items.
  */
-export const getItem = async (
-  itemEci: string
-): Promise<BywayStoreItem> => {
+export const getItem = async (itemEci: string): Promise<BywayStoreItem> => {
   console.log("Fetching item...", itemEci);
   const resp = await fetch(
     `${STORE_PICO_BASE_URI}/c/${itemEci}/query/byway.store.item/getItem`,
@@ -170,20 +168,49 @@ export const getItem = async (
  * @return {Promise} A promise that resolves to a Byway directive response.
  */
 export const updateItem = async (
-  itemEci: string
-): Promise => {
+  itemEci: string,
+  item: BywayStoreItem
+): Promise<any> => {
   const resp = await fetch(
-    `${STORE_PICO_BASE_URI}/c/${itemEci}/query/byway.store.item/getItem`,
+    `${STORE_PICO_BASE_URI}/c/${itemEci}/event-wait/item/update`,
     {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
+      body: JSON.stringify(item),
     }
   );
   if (resp.ok) {
     return resp.json();
   }
-  throw new Error("Error while fetching store item.");
+  throw new Error("Error while updating store item.");
+};
+/**
+ *
+ * Calls the 'item:delete' event endpoint of the store entity Pico.
+ *
+ * @return {Promise} A promise that resolves to a Byway directive response.
+ */
+export const deleteItem = async (
+  storeEci: string,
+  id: string
+): Promise<any> => {
+  console.log("Deleting item...", storeEci, id);
+  const resp = await fetch(
+    `${STORE_PICO_BASE_URI}/c/${storeEci}/event-wait/item/delete`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ id }),
+    }
+  );
+  if (resp.ok) {
+    return resp.json();
+  }
+  throw new Error("Error while updating store item.");
 };

@@ -18,7 +18,6 @@ export const action: ActionFunction = async ({ request, params }) => {
     typeof item.tags !== "string" ||
     typeof storeEci !== "string"
   ) {
-    console.log(item, storeEci);
     throw new Error("Invalid form data");
   }
   await newItem({ storeEci, item });
