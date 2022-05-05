@@ -31,7 +31,7 @@ const ResultTable = ({ matches }: ResultTableProps) => {
         },
       },
       {
-        Header: () => (<div className="text-right">Price</div>),
+        Header: () => <div className="text-right">Price</div>,
         accessor: "price",
         Cell: ({ cell: { value } }: any) => {
           return (
