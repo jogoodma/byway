@@ -6,7 +6,7 @@ ruleset byway.store.entity {
     use module io.picolabs.subscription alias subscription
     use module byway.store.tags alias tags
 
-    shares getStore, getItems, getReadOnlyEci
+    shares getStore, getItems, getPublicEci
   }
   global {
 
@@ -16,17 +16,22 @@ ruleset byway.store.entity {
       "item",
     ]
 
-    getReadOnlyEci = function() {
-      wrangler:channels(tags:storeChannelTags().get(["entity","readOnly"])).head().get("id")
+    getPublicEci = function(type = "readOnly") {
+      wrangler:channels(tags:storeChannelTags().get(["entity",type])).head().get("id")
     }
+
     getStore = function() {
-      publicEci = getReadOnlyEci()
+      publicEci = getPublicEci("validated")
       store = ent:store
       store.put("publicEci", publicEci)
     }
 
     getItems = function() {
-      return null
+      ecis = ent:itemEntityFamilyChannels.values().defaultsTo([])
+      items = ecis.map(function(eci) {
+        return wrangler:picoQuery(eci, "byway.store.item", "getItem", {})
+      })
+      return items
     }
   }
 
@@ -57,7 +62,8 @@ ruleset byway.store.entity {
     pre {
       allowQueryPolicy = [
         {"rid": meta:rid, "name":"getStore"},
-        {"rid": meta:rid, "name":"getReadOnlyEci"},
+        {"rid": meta:rid, "name":"getPublicEci"},
+        {"rid": meta:rid, "name":"getItems"},
       ]
       allowEventPolicy = [
         {"domain": "store", "name":"update"},
@@ -113,20 +119,18 @@ ruleset byway.store.entity {
     select when item new
       name re#(.+)#
       description re#(.+)#
-      image_url re#(.+)#
-      setting(name, description, image_url)
+      //image_url re#(.+)#
+      //setting(name, description, image_url)
+      setting(name, description)
     pre {
+      id = random:uuid()
       picoName = name
-      itemEntityExists = ent:itemEntityFamilyChannels.klog("itemEntityFamilyChannels:") >< picoName.klog("picoName:") 
+      itemEntityExists = ent:itemEntityFamilyChannels.klog("itemEntityFamilyChannels:") >< id.klog("Item id:") 
     }
     if not itemEntityExists.klog("itemEnityExists") then 
-      send_directive("requesting_new_item", {"name": picoName})
+      send_directive("requesting_new_item", {"name": picoName, "id": id})
     fired {
-      raise wrangler event "new_child_request" attributes {
-        "name": picoName,
-        "description": description,
-        "image_url": image_url
-      }
+      raise wrangler event "new_child_request" attributes event:attrs.put({"id": id})
     }
     else {
       // TODO - Handle this error so that the UI can access it.
@@ -165,18 +169,18 @@ ruleset byway.store.entity {
   }
 
   /**
-   * Adds pico entity names to the managed store entity list.
+   * Adds pico entity ids to the managed store entity list.
    * 
-   * @param {string} name - The name of the store entity pico.
+   * @param {string} id - The id of the store entity pico.
    */
-  rule addItemNames {
+  rule addItemIds {
     select when wrangler new_child_created
     pre {
-      name = event:attrs{"name"}
+      id = event:attrs{"id"}
       eci = event:attrs{"eci"}
     }
     fired {
-      ent:itemEntityFamilyChannels{name} := eci
+      ent:itemEntityFamilyChannels{id} := eci
     }
   }
 
@@ -188,19 +192,19 @@ ruleset byway.store.entity {
   rule deleteItem {
     select when item delete
     pre {
-      name = event:attrs{"name"}
-      exists = ent:itemEntityFamilyChannels >< name
-      eciToDelete = ent:itemEntityFamilyChannels{name} 
+      id = event:attrs{"id"}
+      exists = ent:itemEntityFamilyChannels >< id
+      eciToDelete = ent:itemEntityFamilyChannels{id} 
     }
     if exists && eciToDelete then
-      send_directive("deleting_item", {"name": name})
+      send_directive("deleting_item", {"id": id})
 
-    // Delete store
+    // Delete item
     fired {
       raise wrangler event "child_deletion_request" attributes {
         "eci": eciToDelete,
       }
-      clear ent:itemEntityFamilyChannels{name}
+      clear ent:itemEntityFamilyChannels{id}
     }
   }
 

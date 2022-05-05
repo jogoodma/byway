@@ -6,15 +6,15 @@ ruleset byway.store.item {
     use module io.picolabs.subscription alias subscription
     use module byway.store.tags alias tags
 
-    shares getItem, getReadOnlyEci
+    shares getItem, getPublicEci
   }
   global {
-    getReadOnlyEci = function() {
-      wrangler:channels(tags:storeChannelTags().get(["item","readOnly"])).head().get("id")
+    getPublicEci = function(type = "readOnly") {
+      wrangler:channels(tags:storeChannelTags().get(["item",type])).head().get("id")
     }
 
     getItem = function() {
-      publicEci = getReadOnlyEci()
+      publicEci = getPublicEci("validated")
       item = ent:item
       item.put("publicEci", publicEci)
     }
@@ -29,14 +29,18 @@ ruleset byway.store.item {
   */
   rule initialize {
     select when wrangler ruleset_installed
+        id re#(.+)#
         name re#(.+)#
         description re#(.+)#
-        image_url re#(.+)#
-        setting(name, description, image_url)
+        setting(id, name, description)
         where event:attrs{"rids"} >< meta:rid
+    pre {
+      item_id = id.defaultsTo(random:uuid())
+      image_url = event:attrs{"image_url"}
+    }
 
     fired {
-      ent:item{"itemId"} := random:uuid()
+      ent:item{"id"} := item_id
       ent:item{"name"} := name
       ent:item{"description"} := description
       ent:item{"image_url"} := image_url 
@@ -51,7 +55,7 @@ ruleset byway.store.item {
     pre {
       allowQueryPolicy = [
         {"rid": meta:rid, "name":"getItem"},
-        {"rid": meta:rid, "name":"getReadOnlyEci"},
+        {"rid": meta:rid, "name":"getPublicEci"},
       ]
 
     }
