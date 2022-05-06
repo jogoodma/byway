@@ -8,7 +8,7 @@ services:
     ports:
       - "127.0.0.1::80"
     volumes:
-      - ./proxy/Caddyfile:/etc/caddy/Caddyfile
+      - ./proxy/Caddyfile-buyer-proxy:/etc/caddy/Caddyfile
       - caddy_buyer_data:/data
       - caddy_buyer_config:/config
     networks:
@@ -21,7 +21,7 @@ services:
     ports:
       - "127.0.0.1::80"
     volumes:
-      - ./proxy/Caddyfile-buyer-proxy:/etc/caddy/Caddyfile
+      - ./proxy/Caddyfile-buyer-proxy-admin:/etc/caddy/Caddyfile
       - caddy_buyer_proxy_data:/data
       - caddy_buyer_proxy_config:/config
     networks:
@@ -31,8 +31,7 @@ services:
       context: ./client
       dockerfile: Dockerfile
     env_file:
-      - ./client/apps/byway-ui/.env
-#      - ./client/apps/byway-ui/.dev.env
+      - ./client/apps/byway-ui/.env.buyer
     environment:
       - NODE_ENV=production
     networks:
@@ -42,12 +41,48 @@ services:
     build:
       context: ./server
     environment:
-      #- PICO_ENGINE_BASE_URL=http://localhost:3000/
       - NODE_ENV=production
     init: true
     volumes:
       - buyer-vol:/var/pico-image
       - ./server/rulesets:/usr/src/app/rulesets
+    networks:
+      - buyer
+      - matcher
+  seller-proxy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - seller-server
+    ports:
+      - "127.0.0.1::80"
+    volumes:
+      - ./proxy/Caddyfile-seller-proxy:/etc/caddy/Caddyfile
+      - caddy_seller_data:/data
+      - caddy_seller_config:/config
+    networks:
+      - seller
+  seller-pico-admin:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - seller-server
+    ports:
+      - "127.0.0.1::80"
+    volumes:
+      - ./proxy/Caddyfile-seller-proxy-admin:/etc/caddy/Caddyfile
+      - caddy_seller_proxy_data:/data
+      - caddy_seller_proxy_config:/config
+    networks:
+      - seller
+  seller-client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    env_file:
+      - ./client/apps/byway-ui/.env.seller
+    environment:
+      - NODE_ENV=production
     networks:
       - buyer
       - matcher
@@ -57,8 +92,6 @@ services:
     init: true
     environment:
       - NODE_ENV=production
-    #ports:
-      #- "127.0.0.1::3000"
     volumes:
       - seller-vol:/var/pico-image
     networks:
@@ -108,4 +141,8 @@ volumes:
   caddy_buyer_proxy_data: {}
   caddy_matcher_proxy_config: {}
   caddy_matcher_proxy_data: {}
+  caddy_seller_config: {}
+  caddy_seller_data: {}
+  caddy_seller_proxy_config: {}
+  caddy_seller_proxy_data: {}
 

@@ -5,8 +5,8 @@
 http://localhost:80
 
 # Proxy Sky events and queries to the Pico engine server.
-reverse_proxy /sky/* buyer-server:3000
-reverse_proxy /c/* buyer-server:3000
+reverse_proxy /sky/* seller-server:3000
+reverse_proxy /c/* seller-server:3000
 
 # Pass all other requests to the Remix App
-reverse_proxy buyer-client:3000
+reverse_proxy seller-client:3000
