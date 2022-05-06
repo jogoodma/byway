@@ -1,0 +1,12 @@
+{
+  "request": {
+    "name": "Trek bicycle",
+    "description": "Trek mountain bike with shocks. Good condition.",
+    "price": 800.00, 
+    "tags": [
+      "trek",
+      "bike",
+      "mountain"
+    ]
+  }
+}

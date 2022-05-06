@@ -187,6 +187,7 @@ export const updateItem = async (
   }
   throw new Error("Error while updating store item.");
 };
+
 /**
  *
  * Calls the 'item:delete' event endpoint of the store entity Pico.
@@ -197,7 +198,6 @@ export const deleteItem = async (
   storeEci: string,
   id: string
 ): Promise<any> => {
-  console.log("Deleting item...", storeEci, id);
   const resp = await fetch(
     `${STORE_PICO_BASE_URI}/c/${storeEci}/event-wait/item/delete`,
     {

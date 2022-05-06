@@ -55,12 +55,9 @@ const ItemTable = ({ items, storeEci }: ItemTableProps) => {
                   </button>
                 </div>
               </Link>
-              <Form method="post" action="/requests/new" reloadDocument>
-                <input
-                  type="hidden"
-                  name="request"
-                  value={JSON.stringify(item)}
-                />
+              <Form method="get" action="/requests/new">
+                <input type="hidden" name="itemEci" value={item.publicEci} />
+                <input type="hidden" name="type" value="for_sale" />
                 <div className="tooltip" data-tip="Sell">
                   <button
                     className="btn btn-circle btn-xs"

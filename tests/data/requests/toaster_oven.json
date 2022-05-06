@@ -1,0 +1,12 @@
+{
+  "request": {
+    "name": "Toaster oven",
+    "description": "4 slice electric toaster oven",
+    "price": 75.00, 
+    "tags": [
+      "toaster_oven",
+      "kitchen",
+      "appliance"
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "request": {
+    "name": "Giant bicycle",
+    "description": "Giant mountain bike. Good condition.",
+    "price": 800.00, 
+    "tags": [
+      "giant",
+      "bike",
+      "mountain"
+    ]
+  }
+}

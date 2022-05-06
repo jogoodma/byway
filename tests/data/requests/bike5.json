@@ -1,0 +1,12 @@
+{
+  "request": {
+    "name": "Schwinn kid's bike",
+    "description": "Kids road bike. Good condition.",
+    "price": 100.00, 
+    "tags": [
+      "schwinn",
+      "bike",
+      "kids"
+    ]
+  }
+}
